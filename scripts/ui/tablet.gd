@@ -87,8 +87,11 @@ func open(tab: String) -> void:
 	Sfx.play("whoosh", 0.05, -6.0)
 
 
-func close() -> void:
+func close(force := false) -> void:
 	if not visible:
+		return
+	# The house is sold: the only way forward is the Next House button.
+	if _sold_value >= 0 and not force:
 		return
 	visible = false
 	Game.pop_ui(&"tablet")
@@ -100,8 +103,7 @@ func refresh() -> void:
 	for k in _tab_buttons:
 		var b: Button = _tab_buttons[k]
 		b.modulate = Color.WHITE if k == _tab else Color(1, 1, 1, 0.55)
-	for c in _content.get_children():
-		c.free()
+	UiTheme.clear(_content)
 	match _tab:
 		"job":
 			_build_job()
@@ -294,7 +296,7 @@ func _build_sold() -> void:
 	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	btn.pressed.connect(
 		func():
-			close()
+			close(true)
 			world.load_next_house()
 	)
 	_content.add_child(btn)
@@ -342,6 +344,7 @@ func _build_settings() -> void:
 		l.custom_minimum_size.x = 240
 		row.add_child(l)
 		var slider := HSlider.new()
+		slider.focus_mode = Control.FOCUS_NONE
 		slider.min_value = s[2]
 		slider.max_value = s[3]
 		slider.step = 0.05

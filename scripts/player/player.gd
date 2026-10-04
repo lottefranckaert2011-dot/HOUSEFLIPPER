@@ -17,7 +17,7 @@ var _bob := 0.0
 
 
 func _init() -> void:
-	collision_layer = 8
+	collision_layer = Geo.LAYER_PLAYER
 	collision_mask = Geo.LAYER_WORLD
 	var cs := CollisionShape3D.new()
 	var capsule := CapsuleShape3D.new()

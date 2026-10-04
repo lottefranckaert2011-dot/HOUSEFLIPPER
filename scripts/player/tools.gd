@@ -300,7 +300,9 @@ func _update_ghost() -> void:
 	var basis := Basis(Vector3.UP, _ghost_yaw)
 	if _ghost.place_mode() == "wall":
 		var flat := Vector3(n.x, 0, n.z)
-		valid = absf(n.y) < 0.3 and flat.length() > 0.1 and not (hit["collider"] is Furniture)
+		# Only hang things on the inside walls, not on windows or furniture.
+		var on_wall: bool = hit["collider"] is Surface and hit["collider"].kind == "wall"
+		valid = absf(n.y) < 0.3 and flat.length() > 0.1 and on_wall
 		if flat.length() > 0.1:
 			basis = Basis.looking_at(-flat.normalized(), Vector3.UP)
 		pos += flat.normalized() * 0.01 if flat.length() > 0.1 else Vector3.ZERO
@@ -331,7 +333,8 @@ func _overlaps(f: Furniture) -> bool:
 	if f.place_mode() == "wall":
 		lift = Vector3(0, 0, 0.03)
 	q.transform = f.global_transform * Transform3D(Basis(), f.box_center + lift)
-	q.collision_mask = Geo.LAYER_WORLD
+	# Include the player's layer so nothing can be placed on top of them.
+	q.collision_mask = Geo.LAYER_WORLD | Geo.LAYER_PLAYER
 	if _moving:
 		q.exclude = [_moving.get_rid()]
 	return not get_world_3d().direct_space_state.intersect_shape(q, 1).is_empty()

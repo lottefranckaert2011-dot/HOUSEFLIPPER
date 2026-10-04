@@ -39,6 +39,8 @@ jobs:
           GODOT=$(ls ~/godot/Godot_v*_linux.x86_64)
           "$GODOT" --headless --editor --quit || true
           "$GODOT" --headless -- --selftest
+          sudo apt-get install -y -qq xvfb > /dev/null
+          xvfb-run -a -s "-screen 0 1280x720x24" "$GODOT" --rendering-driver opengl3 --resolution 1280x720 -- --playtest
           mkdir -p build/web
           "$GODOT" --headless --export-release "CrazyGames" build/web/index.html
           ls -la build/web

@@ -446,7 +446,9 @@ func _on_toast(text: String, color: Color) -> void:
 	p.add_child(l)
 	_toasts.add_child(p)
 	while _toasts.get_child_count() > 6:
-		_toasts.get_child(0).free()
+		var old := _toasts.get_child(0)
+		_toasts.remove_child(old)
+		old.queue_free()
 	p.modulate.a = 0.0
 	var tw := p.create_tween()
 	tw.tween_property(p, "modulate:a", 1.0, 0.15)
@@ -458,8 +460,7 @@ func _on_toast(text: String, color: Color) -> void:
 func _on_tasks(progress: Array, all_done: bool) -> void:
 	var job := world.current_job()
 	_job_title.text = job["title"]
-	for c in _task_box.get_children():
-		c.free()
+	UiTheme.clear(_task_box)
 	if progress.is_empty():
 		var l := UiTheme.label("Open the tablet to sell the house!", 16, UiTheme.GOLD)
 		_task_box.add_child(l)

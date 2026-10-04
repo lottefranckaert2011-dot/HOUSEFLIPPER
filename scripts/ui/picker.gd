@@ -123,10 +123,8 @@ func close() -> void:
 
 
 func _refresh() -> void:
-	for c in _tabs.get_children():
-		c.free()
-	for c in _grid.get_children():
-		c.free()
+	UiTheme.clear(_tabs)
+	UiTheme.clear(_grid)
 	var tabs: Array = (
 		WALL_TABS if _kind == "wall" else (FLOOR_TABS if _kind == "floor" else Catalog.SHOP_TABS)
 	)
@@ -176,6 +174,7 @@ func _card(
 	title: String, price: int, tex: Texture2D, tint: Color, selected: bool, on_pick: Callable
 ) -> Control:
 	var b := Button.new()
+	b.focus_mode = Control.FOCUS_NONE
 	b.custom_minimum_size = Vector2(150, 176)
 	var normal := UiTheme.box(
 		Color(1, 1, 1, 0.08),

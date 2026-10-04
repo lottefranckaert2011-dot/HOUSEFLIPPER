@@ -57,6 +57,14 @@ static func get_theme() -> Theme:
 	return t
 
 
+## Removes and frees all children safely, even if one of them is the button
+## whose signal is running right now (freeing it immediately would crash).
+static func clear(node: Node) -> void:
+	for c in node.get_children():
+		node.remove_child(c)
+		c.queue_free()
+
+
 ## Anchors `c` to a preset point plus an offset; it grows from there to fit.
 static func anchor(c: Control, preset: int, off := Vector2.ZERO) -> void:
 	c.set_anchors_preset(preset)
@@ -114,6 +122,8 @@ static func button(text: String, color := ACCENT, min_w := 0.0) -> Button:
 	var b := Button.new()
 	b.text = text
 	b.custom_minimum_size = Vector2(min_w, 46)
+	# Keyboard focus would let Tab/Space/Enter press hidden buttons.
+	b.focus_mode = Control.FOCUS_NONE
 	if color != ACCENT:
 		b.add_theme_stylebox_override("normal", box(color, 12, 10))
 		b.add_theme_stylebox_override("hover", box(color.lightened(0.15), 12, 10))

@@ -4,6 +4,7 @@ class_name Geo
 const LAYER_WORLD := 1
 const LAYER_INTERACT := 2
 const LAYER_SURFACE := 4
+const LAYER_PLAYER := 8
 
 
 ## Splits a wall span [u0, u1] x [0, height] into solid rectangles around the

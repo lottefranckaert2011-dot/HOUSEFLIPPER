@@ -26,21 +26,22 @@ var _save_queued := false
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	load_game()
-	if (
-		"--shots" in OS.get_cmdline_user_args()
-		and ResourceLoader.exists("res://tools/screenshot.gd")
-	):
-		add_child(load("res://tools/screenshot.gd").new())
-	if (
-		"--selftest" in OS.get_cmdline_user_args()
-		and ResourceLoader.exists("res://tools/selftest.gd")
-	):
-		add_child(load("res://tools/selftest.gd").new())
-	if (
-		"--thumbs" in OS.get_cmdline_user_args()
-		and ResourceLoader.exists("res://tools/thumbnails.gd")
-	):
-		add_child(load("res://tools/thumbnails.gd").new())
+	_start_dev_tools()
+
+
+## Dev tools in tools/ (not exported) start from command-line flags, e.g.
+## godot --headless -- --selftest
+func _start_dev_tools() -> void:
+	var flags := {
+		"--shots": "screenshot",
+		"--selftest": "selftest",
+		"--thumbs": "thumbnails",
+		"--playtest": "playtest"
+	}
+	for flag in flags:
+		var path := "res://tools/%s.gd" % flags[flag]
+		if flag in OS.get_cmdline_user_args() and ResourceLoader.exists(path):
+			add_child(load(path).new())
 
 
 func has_save() -> bool:

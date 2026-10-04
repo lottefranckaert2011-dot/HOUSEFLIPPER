@@ -88,6 +88,7 @@ tools/                   Dev tools (not exported), see below
 python3 tools/gen_textures.py      # regenerate textures (Pillow, numpy)
 python3 tools/gen_audio.py         # regenerate sound effects and music (numpy)
 godot --headless -- --selftest     # automated play-through of the first jobs
+xvfb-run godot --rendering-driver opengl3 -- --playtest   # plays with simulated clicks and keys
 xvfb-run godot --rendering-driver opengl3 --resolution 512x512 -- --thumbs   # catalog thumbnails
 xvfb-run godot --rendering-driver opengl3 -- --shots <dir>                  # screenshots
 gdlint scripts/ tools/ && gdformat --check scripts/ tools/                  # lint (gdtoolkit 4)
