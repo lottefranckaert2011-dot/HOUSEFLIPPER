@@ -1,0 +1,49 @@
+name: Web export (CrazyGames)
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: "4.7.2"
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Godot and export templates
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-web
+
+      - name: Download Godot and web export templates
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot
+          curl -sSL -o godot.zip "https://downloads.godotengine.org/?version=${GODOT_VERSION}&flavor=stable&slug=linux.x86_64.zip"
+          unzip -q godot.zip -d ~/godot
+          curl -sSL -o templates.tpz "https://downloads.godotengine.org/?version=${GODOT_VERSION}&flavor=stable&slug=export_templates.tpz&platform=templates"
+          T=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p "$T"
+          unzip -q -j templates.tpz "templates/web_*" "templates/version.txt" -d "$T"
+
+      - name: Import and export
+        run: |
+          GODOT=$(ls ~/godot/Godot_v*_linux.x86_64)
+          "$GODOT" --headless --editor --quit || true
+          "$GODOT" --headless -- --selftest
+          mkdir -p build/web
+          "$GODOT" --headless --export-release "CrazyGames" build/web/index.html
+          ls -la build/web
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: home-flip-designer-web
+          path: build/web

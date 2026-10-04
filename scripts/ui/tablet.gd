@@ -8,6 +8,7 @@ var _content: VBoxContainer
 var _tab_buttons := {}
 var _money: Label
 var _sold_value := -1
+var _last_reward_ad := -1000000
 
 
 func setup(p_world: GameWorld) -> void:
@@ -197,17 +198,43 @@ func _build_job() -> void:
 			refresh()
 	)
 	foot.add_child(btn)
-	(
-		_content
-		. add_child(
-			_dark(
-				"Tip: aim at a wall with the Paint tool and hold Shift to paint the whole room at once.",
-				14,
-				false,
-				true
-			)
-		)
+	_add_reward_ad_offer()
+	var tip := "Tip: aim at a wall with the Paint tool and hold Shift to paint the whole room."
+	_content.add_child(_dark(tip, 14, false, true))
+
+
+## Offers a rewarded video for some extra cash (CrazyGames only).
+func _add_reward_ad_offer() -> void:
+	if not CrazySDK.is_available():
+		return
+	var ready := Time.get_ticks_msec() - _last_reward_ad > 180000
+	var row := HBoxContainer.new()
+	_content.add_child(row)
+	var amount := 300 + 100 * (Game.house_no - 1)
+	var l := _dark("Short on cash? Watch a short ad for %s." % UiTheme.money(amount), 17)
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(l)
+	var btn := UiTheme.button(
+		"Watch ad  +%s" % UiTheme.money(amount) if ready else "Come back later",
+		UiTheme.GOLD.darkened(0.2),
+		230
 	)
+	btn.disabled = not ready
+	btn.pressed.connect(
+		func():
+			btn.disabled = true
+			CrazySDK.ad_finished.connect(
+				func(ok: bool):
+					if ok:
+						_last_reward_ad = Time.get_ticks_msec()
+						Game.add_money(amount, "Ad reward")
+						Sfx.play("cash")
+					refresh(),
+				CONNECT_ONE_SHOT
+			)
+			CrazySDK.request_rewarded_ad()
+	)
+	row.add_child(btn)
 
 
 func _build_sell() -> void:

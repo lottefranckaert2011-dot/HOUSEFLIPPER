@@ -78,7 +78,7 @@ func _build_environment() -> void:
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = 1.05
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 1.12
+	env.adjustment_saturation = 1.04
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
@@ -172,7 +172,6 @@ func start_playing() -> void:
 	Game.playing = true
 	Game.capture_mouse()
 	Sfx.start_music()
-	CrazySDK.gameplay_start()
 
 
 func show_menu() -> void:
