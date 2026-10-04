@@ -4,7 +4,7 @@ A first-person house-flipping game built with [Godot 4](https://godotengine.org/
 
 ## Getting started
 
-1. Install **Godot 4.5 or newer** (standard build, not .NET): https://godotengine.org/download
+1. Install **Godot 4.7 or newer** (standard build, not .NET): https://godotengine.org/download
 2. Open Godot, click **Import**, and select `project.godot` in this folder.
 3. Press **F5** to run the main scene.
 
